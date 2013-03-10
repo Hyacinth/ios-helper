@@ -7,7 +7,6 @@
 //
 
 #import "HTTP.h"
-#import "UIHelper.h"
 
 @implementation HTTP
 
@@ -15,12 +14,13 @@
 {
     NSString* finalUrl=[DOMAIN_URL stringByAppendingString:url];
     NSMutableURLRequest* request=[HTTP generateRequestWithURL:finalUrl method:method params:params];
+
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse * response, NSData *data, NSError *error) {
         if(!error){
             id result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
             completionHandler(result);
         }else{
-            [UIHelper alert:@"网络连接出错啦"];
+            completionHandler(nil);
         }
     }];
 }
@@ -28,7 +28,7 @@
 +(void)postJsonToPath:(NSString*)url id:object  completionHandler:(void (^)(id)) completionHandler
 {
     NSString* finalUrl=[DOMAIN_URL stringByAppendingString:url];
-    NSMutableURLRequest  *request=[NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSURL URLWithString:finalUrl]]];
+    NSMutableURLRequest  *request=[NSMutableURLRequest requestWithURL:[NSURL URLWithString:finalUrl]];
     [request setHTTPMethod:@"POST"];
     NSData *body=[NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:nil];
     [request setHTTPBody:body];
@@ -39,7 +39,7 @@
             id result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
             completionHandler(result);
         }else{
-            [UIHelper alert:@"网络连接出错啦"];
+            completionHandler(nil);
         }
     }];
 
@@ -49,7 +49,7 @@
 +(NSMutableURLRequest*)generateRequestWithURL:(NSString*) url method:(NSString*)method params:(NSDictionary*)params
 {
     if([method isEqualToString:@"GET"]){
-        NSString* finalurl=[NSString stringWithFormat:@"%@?%@",url,[HTTP generateParamString:params]];
+        NSString* finalurl=[NSString stringWithFormat:@"%@?%@",url,[[HTTP generateParamString:params]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSMutableURLRequest  *request=[NSMutableURLRequest requestWithURL:[NSURL URLWithString:finalurl]];
         [request setHTTPMethod:method];
         return request;

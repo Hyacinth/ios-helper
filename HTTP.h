@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define DOMAIN_URL @"http://192.168.32.84:8080/resource"
+#define DOMAIN_URL @"http://pic-news.cloudfoundry.com/resource"
 
 @interface HTTP : NSObject
 
